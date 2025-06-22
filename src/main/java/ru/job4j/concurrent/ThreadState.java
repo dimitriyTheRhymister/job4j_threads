@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ThreadState {
-    private static final Logger logger = LogManager.getLogger(ru.job4j.concurrent.ThreadState.class);
+    private static final Logger LOGGER = LogManager.getLogger(ru.job4j.concurrent.ThreadState.class);
 
     public static void main(String[] args) {
         Thread first = new Thread(() -> System.out.println(Thread.currentThread().getName()));
@@ -28,7 +28,7 @@ public class ThreadState {
                 first.join();
                 second.join();
             } catch (InterruptedException e) {
-                logger.error("Thread was interrupted: ", e);
+                LOGGER.error("Thread was interrupted: ", e);
             }
         }
 
