@@ -14,9 +14,7 @@ public class CountBarrier {
     public void count() {
         synchronized (monitor) {
             count++;
-            if (count >= total) {
-                monitor.notifyAll();
-            }
+            monitor.notifyAll();
         }
     }
 
@@ -27,7 +25,6 @@ public class CountBarrier {
                     monitor.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    break;
                 }
             }
         }
@@ -58,6 +55,11 @@ public class CountBarrier {
         });
 
         waiter.start();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         worker1.start();
         worker2.start();
         worker3.start();
