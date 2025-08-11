@@ -1,6 +1,12 @@
 package ru.job4j.synchronizers;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleBlockingQueueTest {
@@ -126,5 +132,36 @@ class SimpleBlockingQueueTest {
         assertEquals(1, queue.poll());
         assertEquals(2, queue.poll());
         assertEquals(3, queue.poll());
+    }
+
+    @Test
+    public void whenFetchAllThenGetIt() throws InterruptedException {
+        final List<Integer> buffer = new ArrayList<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(5);
+
+        Thread producer = new Thread(() -> IntStream.range(0, 5).forEach(i -> {
+            try {
+                queue.offer(i);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }));
+
+        Thread consumer = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                try {
+                    buffer.add(queue.poll());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+
+        producer.start();
+        consumer.start();
+        producer.join();
+        consumer.join();
+        assertThat(buffer).containsExactly(0, 1, 2, 3, 4);
     }
 }
