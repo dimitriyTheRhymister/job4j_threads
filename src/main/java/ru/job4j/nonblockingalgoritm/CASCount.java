@@ -1,4 +1,4 @@
-package ru.job4j.non_blocking_algoritm;
+package ru.job4j.nonblockingalgoritm;
 
 import net.jcip.annotations.ThreadSafe;
 
