@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class Cache {
@@ -14,13 +15,14 @@ public class Cache {
     }
 
     public boolean update(Base model) {
-        return memory.computeIfPresent(model.id(), (id, existing) -> {
+        BiFunction<Integer, Base, Base> updateLogic = (id, existing) -> {
             if (existing.version() != model.version()) {
                 throw new OptimisticException(
                         "Объект с id " + id + " не может быть обновлен, версия не совпадает.");
             }
             return new Base(id, model.name(), model.version() + 1);
-        }) != null;
+        };
+        return memory.computeIfPresent(model.id(), updateLogic) != null;
     }
 
     public void delete(int id) {
