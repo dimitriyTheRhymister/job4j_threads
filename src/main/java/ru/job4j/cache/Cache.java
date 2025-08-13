@@ -13,21 +13,14 @@ public class Cache {
         return memory.putIfAbsent(model.id(), model) == null;
     }
 
-    public boolean update(Base model) throws OptimisticException {
-        try {
-            return memory.computeIfPresent(model.id(), (id, existingModel) -> {
-                if (existingModel.version() != model.version()) {
-                    throw new RuntimeException(new OptimisticException(
-                            "Объект с id " + id + " не может быть обновлен, версия не совпадает."));
-                }
-                return new Base(id, model.name(), model.version() + 1);
-            }) != null;
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof OptimisticException) {
-                throw (OptimisticException) e.getCause();
+    public boolean update(Base model) {
+        return memory.computeIfPresent(model.id(), (id, existing) -> {
+            if (existing.version() != model.version()) {
+                throw new OptimisticException(
+                        "Объект с id " + id + " не может быть обновлен, версия не совпадает.");
             }
-            throw e;
-        }
+            return new Base(id, model.name(), model.version() + 1);
+        }) != null;
     }
 
     public void delete(int id) {
