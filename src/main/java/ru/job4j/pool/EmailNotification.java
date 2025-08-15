@@ -2,9 +2,13 @@ package ru.job4j.pool;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EmailNotification {
-    ExecutorService pool = Executors.newFixedThreadPool(
+    private static final Logger logger = Logger.getLogger(EmailNotification.class.getName());
+    private final ExecutorService pool = Executors.newFixedThreadPool(
             Runtime.getRuntime().availableProcessors()
     );
 
@@ -16,9 +20,31 @@ public class EmailNotification {
     }
 
     public void send(String subject, String body, String email) {
+        System.out.println("Sending email to " + email + " with subject: " + subject + " and body: " + body);
     }
 
     public void close() {
         pool.shutdown();
+        try {
+            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                pool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Thread was interrupted while waiting for tasks to finish.", e);
+            pool.shutdownNow();
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
