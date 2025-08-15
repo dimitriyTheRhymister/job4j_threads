@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EmailNotification {
-    private static final Logger logger = Logger.getLogger(EmailNotification.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EmailNotification.class.getName());
     private final ExecutorService pool = Executors.newFixedThreadPool(
             Runtime.getRuntime().availableProcessors()
     );
@@ -30,7 +30,7 @@ public class EmailNotification {
                 pool.shutdownNow();
             }
         } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Thread was interrupted while waiting for tasks to finish.", e);
+            LOGGER.log(Level.SEVERE, "Thread was interrupted while waiting for tasks to finish.", e);
             pool.shutdownNow();
         }
     }
